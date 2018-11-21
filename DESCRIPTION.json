@@ -1,0 +1,17 @@
+me{
+	"name": "MeSH",
+	"title": "Data extracted from the MeSH database",
+	"description": "Our main purpose is to provide a hierarchically-organized terminology for indexing and cataloging of biomedical information such as MEDLINE/PUBmed and other NLM databases. We also distribute pharmaceutical information through our RxNorm database, and manage the curation of the UMLS and SnoMed database. Information on the descriptor data elements can be found: https://www.nlm.nih.gov/mesh/dtype.html",
+	"reference URL": "https://www.nlm.nih.gov/mesh/meshhome.html",
+	"version": "0.1",
+	"source files": [
+		{
+			"name":"d2018.bin",
+			"URL template":"ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/asciimesh/d2018.bin",
+			"remote update frequency": {
+				"value": 1,
+				"units": "1/year"
+			}
+		}
+	]
+}
