@@ -7,7 +7,7 @@ library(tidyr)
 library(tibble)
 
 setwd(file.path(here(),"scripts/"))
-source("../../00-Utils/writeLastUpdate.R")
+source(here("..", "00-Utils/writeLastUpdate.R"))
 
 ##
 mc.cores <- 55
@@ -24,12 +24,12 @@ sfi <- read.table(
    header=T,
    stringsAsFactors=FALSE
 )
-Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current")]
+Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current", "file")]
 
 # devtools::install_github("hrbrmstr/whatamesh")
 library(whatamesh)
 # list_mesh_files()
-ascii <- read_mesh_file("../sources/d2019.bin", wide = T)
+ascii <- read_mesh_file(here("sources", Mesh_sourceFiles$file), wide = T)
 
 ###############################################################
 ## Parent/child
