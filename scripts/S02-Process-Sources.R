@@ -1,7 +1,10 @@
 library(here)
 library(XML)
 library(parallel)
-library(rdflib)
+# library(rdflib)
+library(dplyr)
+library(tidyr)
+library(tibble)
 
 setwd(file.path(here(),"scripts/"))
 source("../../00-Utils/writeLastUpdate.R")
@@ -25,8 +28,8 @@ Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current")]
 
 # devtools::install_github("hrbrmstr/whatamesh")
 library(whatamesh)
-list_mesh_files()
-ascii <- read_mesh_file("../sources/d2018.bin", wide = T)
+# list_mesh_files()
+ascii <- read_mesh_file("../sources/d2019.bin", wide = T)
 
 ###############################################################
 ## Parent/child
@@ -70,15 +73,21 @@ syn <- do.call(rbind,sapply(grep("UI",invert = T, colnames(syn), value = T),
               return(toRet)
             },
             simplify = FALSE,
-            USE.NAMES = FALSE))
+            USE.NAMES = FALSE)) 
+syn$canonical <- FALSE
+##
 label <- ascii[ascii$UI %in% hier$id,grep(paste("UI","\\bMH\\b",sep = "|"),colnames(ascii))]
 names(label) <- c("syn","id")
+label$canonical <- TRUE
 ##
-idNames <- rbind(syn,label[,c("id","syn")])
-idNames$canonical <- ifelse(idNames$syn %in% label$syn, TRUE, FALSE)
-idNames$DB <- "MeSH"
-idNames <- idNames[order(idNames$canonical,decreasing = T),]
-idNames <- unique(idNames)
+idNames <- syn %>%
+  as_tibble() %>%
+  bind_rows() %>%
+  mutate(DB = "MeSH") %>%
+  arrange(canonical) %>%
+  distinct() 
+# idNames <- idNames[order(idNames$canonical,decreasing = T),]
+# idNames <- unique(idNames)
 dim(idNames)
 
 ## Check characters for \t, \n, \r and put to ASCII

@@ -1,9 +1,10 @@
-setwd("~/Shared/Data-Science/Data-Source-Model-Repository/MeSH-WIP/scripts/")
+# setwd("~/Shared/Data-Science/Data-Source-Model-Repository/MeSH-WIP/scripts/")
 
 library(RJSONIO)
-source("../../00-Utils/downloadSourceFiles.R")
+library(here)
+source(here("../00-Utils/downloadSourceFiles.R"))
 
-desc <- readJSONStream("../DESCRIPTION.json")
+desc <- readJSONStream(here("DESCRIPTION.json"))
 
 sourceFiles <- desc$"source files"
 urls <- unlist(lapply(
@@ -15,6 +16,6 @@ urls <- unlist(lapply(
   }
 ))
 
-srcDir <- "../sources"
+srcDir <- "./sources"
 
 downloadSourceFiles(urls, srcDir)
