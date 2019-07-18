@@ -3,3 +3,6 @@
 "lfrancois"	"2018-11-21"
 "lfrancois"	"2019-06-20"
 "lfrancois"	"2019-06-26"
+"lfrancois"	"2019-07-01"
+"lfrancois"	"2019-07-01"
+"lfrancois"	"2019-07-18"

@@ -30,6 +30,7 @@ Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current", "file")]
 library(whatamesh)
 # list_mesh_files()
 ascii <- read_mesh_file(here("sources", Mesh_sourceFiles$file), wide = T)
+Mesh_sourceFiles <- select(Mesh_sourceFiles, url, current)
 
 ###############################################################
 ## Parent/child
@@ -58,6 +59,36 @@ parentId <- hier[!is.na(hier$parentid),c("id","parentid")]
 names(parentId) <- c("id","parent")
 parentId$DB <- parentId$pDB <- "MeSH"
 
+## Add levels
+getAncestors <- function(id){
+  direct <- termParents[[id]]
+  parents <- direct
+  level <- 0
+  dLev <- c()
+  for(d in direct){
+    dPar <- getAncestors(d)
+    dLev <- c(dLev, dPar$level)
+    parents <- c(parents, dPar$parents)
+  }
+  if(length(dLev)>0){
+    level <- max(dLev)+1
+  }
+  return(list(parents=unique(parents), level=level))
+}
+
+
+parentList <- unstack(parentId, parent~id)
+termParents <- parentList
+library(BiocParallel)
+bpparam <- MulticoreParam(workers = 30)
+
+termAncestors <- bplapply(
+  parentId$id,
+  getAncestors,
+  BPPARAM = bpparam
+)
+names(termAncestors) <- parentId$id
+
 ##################################################
 ## syn/labels
 syn <- ascii[ascii$UI %in% hier$id,grep(paste("UI","ENTRY",sep = "|"),colnames(ascii))]
@@ -82,7 +113,7 @@ label$canonical <- TRUE
 ##
 idNames <- syn %>%
   as_tibble() %>%
-  bind_rows() %>%
+  bind_rows(label) %>%
   mutate(DB = "MeSH") %>%
   arrange(canonical) %>%
   distinct() 
@@ -120,10 +151,17 @@ entryId$def <- gsub("\"","'",entryId$def)
 entryId$def <- gsub("\\\\","",entryId$def)
 table(unlist(sapply(entryId$def, strsplit, split = "")))
 
+## add level
+entryId <- entryId %>%
+  mutate(
+    level=unlist(lapply(termAncestors, function(x) x$level))[entryId$id]
+  ) %>%
+  mutate(level = case_when(is.na(level) ~ 0,
+                           TRUE ~ level))
 
 ############################
 Mesh_parentId <- parentId[,c("DB","id","pDB","parent")]
-Mesh_entryId <- entryId[,c("DB","id","def")]
+Mesh_entryId <- entryId[,c("DB","id","def","level")]
 Mesh_idNames <- idNames[,c("DB","id","syn","canonical")]
 
 ###############################################################################@
