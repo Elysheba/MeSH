@@ -6,8 +6,8 @@
 	"version": "0.1",
 	"source files": [
 		{
-			"name":"d2019.bin",
-			"URL template":"ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/asciimesh/d2019.bin",
+			"name":"d2020.bin",
+			"URL template":"ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/asciimesh/d2020.bin",
 			"remote update frequency": {
 				"value": 1,
 				"units": "1/year"

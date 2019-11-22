@@ -58,6 +58,7 @@ hier$parentid <- hier$id[match(hier$parent,hier$meshid)]
 parentId <- hier[!is.na(hier$parentid),c("id","parentid")]
 names(parentId) <- c("id","parent")
 parentId$DB <- parentId$pDB <- "MeSH"
+parentId$origin <- "MeSH"
 
 ## Add levels
 getAncestors <- function(id){
@@ -159,8 +160,10 @@ entryId <- entryId %>%
   mutate(level = case_when(is.na(level) ~ 0,
                            TRUE ~ level))
 
+
+
 ############################
-Mesh_parentId <- parentId[,c("DB","id","pDB","parent")]
+Mesh_parentId <- parentId[,c("DB","id","pDB","parent","origin")]
 Mesh_entryId <- entryId[,c("DB","id","def","level")]
 Mesh_idNames <- idNames[,c("DB","id","syn","canonical")]
 
