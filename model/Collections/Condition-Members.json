@@ -1,0 +1,19 @@
+{
+	"collection":"Condition",
+	"resource":"MeSH",
+	"tables":[
+		{
+			"name":"Mesh_entryId",
+			"fields":{
+				"source": {
+					"static":false,
+					"value":"DB"
+				},
+				"identifier": {
+					"static":false,
+					"value":"id"
+				}
+			}
+		}
+	]
+}

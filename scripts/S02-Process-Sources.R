@@ -5,6 +5,7 @@ library(parallel)
 library(dplyr)
 library(tidyr)
 library(tibble)
+library(ReDaMoR)
 
 setwd(file.path(here(),"scripts/"))
 source(here("..", "00-Utils/writeLastUpdate.R"))
@@ -15,9 +16,14 @@ sdir <- "../sources"
 ddir <- "../data"
 
 ###############################################################################@
+## Data model ----
+###############################################################################@
+# dm <- model_relational_data()
+# save(dm, file = here("model", "MeSH.rda"))
+
+###############################################################################@
 ## Source information ----
 ###############################################################################@
-
 sfi <- read.table(
    file.path(sdir, "ARCHIVES/ARCHIVES.txt"),
    sep="\t",
@@ -192,7 +198,6 @@ for(f in toSave){
 }
 message(Sys.time())
 message("... Done\n")
-writeLastUpdate()
 
 ##############################################################
 ## Check model
