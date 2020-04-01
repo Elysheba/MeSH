@@ -7,8 +7,9 @@ library(tidyr)
 library(tibble)
 library(ReDaMoR)
 
+
 setwd(file.path(here(),"scripts/"))
-source(here("..", "00-Utils/writeLastUpdate.R"))
+# source(here("..", "00-Utils/writeLastUpdate.R"))
 
 ##
 mc.cores <- 55
@@ -18,8 +19,9 @@ ddir <- "../data"
 ###############################################################################@
 ## Data model ----
 ###############################################################################@
-# dm <- model_relational_data()
-# save(dm, file = here("model", "MeSH.rda"))
+load(here("model", "MeSH.rda"))
+dm <- model_relational_data(dm)
+save(dm, file = here("model", "MeSH.rda"))
 
 ###############################################################################@
 ## Source information ----

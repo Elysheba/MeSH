@@ -1,0 +1,213 @@
+{
+  "Mesh_entryId": {
+    "tableName": ["Mesh_entryId"],
+    "fields": [
+      {
+        "name": "DB",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Name original database/ontology"
+      },
+      {
+        "name": "id",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Disease ontology identifier from Monarch Disease Ontology and EFO."
+      },
+      {
+        "name": "def",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      },
+      {
+        "name": "level",
+        "type": "integer",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      }
+    ],
+    "primaryKey": ["DB", "id"],
+    "foreignKeys": {},
+    "indexes": [
+      {
+        "fields": ["DB", "id"],
+        "unique": [true]
+      }
+    ],
+    "display": {
+      "x": [-73],
+      "y": [-86],
+      "color": ["NA"],
+      "comment": ["MeSH identifiers, definition and level info"]
+    }
+  },
+  "Mesh_parentId": {
+    "tableName": ["Mesh_parentId"],
+    "fields": [
+      {
+        "name": "DB",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Database for id"
+      },
+      {
+        "name": "id",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Disease ontology identifier from Monarch Disease Ontology "
+      },
+      {
+        "name": "pDB",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Name database for parent id"
+      },
+      {
+        "name": "parent",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Parent ontology for id in Monarch Disease Ontology "
+      },
+      {
+        "name": "origin",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": ""
+      }
+    ],
+    "primaryKey": [],
+    "foreignKeys": [
+      {
+        "refTable": ["Mesh_entryId"],
+        "key": [
+          {
+            "from": "DB",
+            "to": "DB"
+          },
+          {
+            "from": "id",
+            "to": "id"
+          }
+        ],
+        "cardinality": [0, -1, 1, 1]
+      }
+    ],
+    "indexes": [
+      {
+        "fields": ["DB", "id"],
+        "unique": [false]
+      }
+    ],
+    "display": {
+      "x": [84],
+      "y": [-180],
+      "color": ["NA"],
+      "comment": ["Hierarchical information"]
+    }
+  },
+  "Mesh_idNames": {
+    "tableName": ["Mesh_idNames"],
+    "fields": [
+      {
+        "name": "DB",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Name original database"
+      },
+      {
+        "name": "id",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Disease ontology identifier from Monarch Disease Ontology"
+      },
+      {
+        "name": "syn",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Term (synonym or label) to describe the disease"
+      },
+      {
+        "name": "canonical",
+        "type": "logical",
+        "nullable": false,
+        "unique": false,
+        "comment": "Current label for the entry"
+      }
+    ],
+    "primaryKey": [],
+    "foreignKeys": [
+      {
+        "refTable": ["Mesh_entryId"],
+        "key": [
+          {
+            "from": "DB",
+            "to": "DB"
+          },
+          {
+            "from": "id",
+            "to": "id"
+          }
+        ],
+        "cardinality": [0, -1, 1, 1]
+      }
+    ],
+    "indexes": [
+      {
+        "fields": ["DB", "id"],
+        "unique": [false]
+      }
+    ],
+    "display": {
+      "x": [-180],
+      "y": [61],
+      "color": ["NA"],
+      "comment": ["Synonym and label info"]
+    }
+  },
+  "Mesh_sourceFiles": {
+    "tableName": ["Mesh_sourceFiles"],
+    "fields": [
+      {
+        "name": "url",
+        "type": "character",
+        "nullable": false,
+        "unique": true,
+        "comment": "URL location of source files"
+      },
+      {
+        "name": "current",
+        "type": "character",
+        "nullable": false,
+        "unique": false,
+        "comment": "Date of the current version of the source files"
+      }
+    ],
+    "primaryKey": [],
+    "foreignKeys": {},
+    "indexes": [
+      {
+        "fields": ["url"],
+        "unique": [true]
+      }
+    ],
+    "display": {
+      "x": [135],
+      "y": [26],
+      "color": ["NA"],
+      "comment": ["Source file info"]
+    }
+  }
+}
