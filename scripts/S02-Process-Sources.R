@@ -20,7 +20,7 @@ ddir <- "../data"
 ## Data model ----
 ###############################################################################@
 load(here("model", "MeSH.rda"))
-dm <- model_relational_data(dm)
+# dm <- model_relational_data(dm)
 save(dm, file = here("model", "MeSH.rda"))
 
 ###############################################################################@

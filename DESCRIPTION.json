@@ -4,6 +4,7 @@
 	"description": "Our main purpose is to provide a hierarchically-organized terminology for indexing and cataloging of biomedical information such as MEDLINE/PUBmed and other NLM databases. We also distribute pharmaceutical information through our RxNorm database, and manage the curation of the UMLS and SnoMed database. Information on the descriptor data elements can be found: https://www.nlm.nih.gov/mesh/dtype.html",
 	"reference URL": "https://www.nlm.nih.gov/mesh/meshhome.html",
 	"version": "0.1",
+	"maintainer":"Liesbeth François <liesbeth.francois@ucb.com>",
 	"source files": [
 		{
 			"name":"d2020.bin",
