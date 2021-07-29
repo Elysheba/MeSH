@@ -20,8 +20,8 @@ ddir <- "../data"
 ## Data model ----
 ###############################################################################@
 load(here("model", "MeSH.rda"))
-# dm <- model_relational_data(dm)
-save(dm, file = here("model", "MeSH.rda"))
+# dm <- model_relational_data()
+# save(dm, file = here("model", "MeSH.rda"))
 
 ###############################################################################@
 ## Source information ----
@@ -34,10 +34,13 @@ sfi <- read.table(
 )
 Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current", "file")]
 
+################################################################@
+################################################################@
+## d2020.bin: File parsing
 # devtools::install_github("hrbrmstr/whatamesh")
 library(whatamesh)
 # list_mesh_files()
-ascii <- read_mesh_file(here("sources", Mesh_sourceFiles$file), wide = T)
+ascii <- read_mesh_file(here("sources", Mesh_sourceFiles$file[2]), wide = T)
 Mesh_sourceFiles <- select(Mesh_sourceFiles, url, current)
 
 ###############################################################
@@ -140,7 +143,7 @@ table(unlist(sapply(idNames$syn, strsplit, split = "")))
 
 ##################################################################
 ## entryId
-def <- ascii[ascii$UI %in% hier$id,grep(paste("UI","MS",sep = "|"),colnames(ascii))]
+def <- ascii[ascii$UI %in% hier$id, grep(paste("UI","MS",sep = "|"), colnames(ascii))]
 entryId <- data.frame(DB = "MeSH",
                       id = unique(hier$id),
                       def = def$MS[match(unique(hier$id),def$UI)],
@@ -168,12 +171,108 @@ entryId <- entryId %>%
   mutate(level = case_when(is.na(level) ~ 0,
                            TRUE ~ level))
 
-
-
-############################
-Mesh_parentId <- parentId[,c("DB","id","pDB","parent","origin")]
-Mesh_entryId <- entryId[,c("DB","id","def","level")]
+Mesh_parentId <- parentId[,c("DB","id","pDB","parent","origin")] 
+Mesh_entryId <- entryId[,c("DB","id","def","level")] 
 Mesh_idNames <- idNames[,c("DB","id","syn","canonical")]
+
+rm(parentId, entryId, idNames, syn, def, hier,idNames, entryId, parentId)
+
+###############################################################@
+###############################################################@
+sfi <- read.table(
+  file.path(sdir, "ARCHIVES/ARCHIVES.txt"),
+  sep="\t",
+  header=T,
+  stringsAsFactors=FALSE
+)
+Mesh_sourceFiles <- sfi[which(sfi$inUse), c("url", "current", "file")]
+## 
+ascii <- read_mesh_file(here("sources", Mesh_sourceFiles$file[1]), wide = T)
+Mesh_sourceFiles <- select(Mesh_sourceFiles, url, current)
+
+
+## c2020_disease_bin file parsing
+##################################################
+## syn/labels
+syn <- ascii[,grep(paste("UI","SY",sep = "|"),colnames(ascii))]
+syn <- do.call(rbind,sapply(grep("UI",invert = T, colnames(syn), value = T),
+                            function(df){
+                              d <- syn[,df]
+                              names(d) <- "syn"
+                              toRet <- data.frame("id" = syn$UI,
+                                                  "syn" = d,
+                                                  stringsAsFactors = F)
+                              toRet <- toRet[!is.na(toRet$syn),]
+                              toRet$syn <- gsub("[:|:].*","",toRet$syn)
+                              return(toRet)
+                            },
+                            simplify = FALSE,
+                            USE.NAMES = FALSE)) %>% 
+  as_tibble()
+syn$canonical <- FALSE
+##
+label <- ascii[,grep(paste("UI","\\bNM\\b",sep = "|"),colnames(ascii))]
+names(label) <- c("syn","id")
+label$canonical <- TRUE
+##
+idNames <- syn %>%
+  as_tibble() %>%
+  bind_rows(label) %>%
+  mutate(DB = "MeSH") %>%
+  arrange(canonical) %>%
+  distinct() 
+# idNames <- idNames[order(idNames$canonical,decreasing = T),]
+# idNames <- unique(idNames)
+dim(idNames)
+
+## Check characters for \t, \n, \r and put to ASCII
+idNames$syn <- iconv(x = idNames$syn,to="ASCII//TRANSLIT")
+table(unlist(sapply(idNames$syn, strsplit, split = "")))
+idNames$syn <- gsub(paste("\n","\t","\r", sep = "|")," ",idNames$syn)
+table(unlist(sapply(idNames$syn, strsplit, split = "")))
+idNames$syn <- gsub("\"","'",idNames$syn)
+table(unlist(sapply(idNames$syn, strsplit, split = "")))
+
+##################################################################
+## entryId
+##
+##
+hier <- ascii %>% 
+  mutate(db = "MeSH",
+         canonical = TRUE) %>% 
+  select(db, 
+         id = UI,
+         syn = NM,
+         canonical)
+entryId <- data.frame(DB = "MeSH",
+                      id = ascii$UI,
+                      def = ascii$NM,
+                      stringsAsFactors = F)
+
+## Empty definition to NA
+nc <- nchar(entryId$def)
+head(table(nc), n = 20)
+# entryId[which(nc < 4),]
+# entryId[which(nc < 4),"def"] <- NA
+## Check characters for \t, \n, \r and put to ASCII
+entryId$def <- iconv(x = entryId$def,to="ASCII//TRANSLIT")
+table(unlist(sapply(entryId$def, strsplit, split = "")))
+entryId$def <- gsub(paste("\n","\t","\r", sep = "|")," ",entryId$def)
+table(unlist(sapply(entryId$def, strsplit, split = "")))
+entryId$def <- gsub("\"","'",entryId$def)
+entryId$def <- gsub("\\\\","",entryId$def)
+table(unlist(sapply(entryId$def, strsplit, split = "")))
+
+## add level
+entryId <- entryId %>%
+  mutate(level = NA)
+
+## to do: combine both files
+############################
+Mesh_entryId <- entryId[,c("DB","id","def","level")] %>% 
+  bind_rows(Mesh_entryId)
+Mesh_idNames <- idNames[,c("DB","id","syn","canonical")] %>% 
+  bind_rows(Mesh_idNames)
 
 ###############################################################################@
 ## Writing tables ----
@@ -203,4 +302,4 @@ message("... Done\n")
 
 ##############################################################
 ## Check model
-source("../../00-Utils/autoCheckModel.R")
+# source("../../00-Utils/autoCheckModel.R")
