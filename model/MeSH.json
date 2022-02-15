@@ -26,13 +26,13 @@
       {
         "name": "level",
         "type": "integer",
-        "nullable": false,
+        "nullable": true,
         "unique": false,
         "comment": ""
       }
     ],
     "primaryKey": ["DB", "id"],
-    "foreignKeys": {},
+    "foreignKeys": [],
     "indexes": [
       {
         "fields": ["DB", "id"],
@@ -196,7 +196,7 @@
       }
     ],
     "primaryKey": [],
-    "foreignKeys": {},
+    "foreignKeys": [],
     "indexes": [
       {
         "fields": ["url"],
